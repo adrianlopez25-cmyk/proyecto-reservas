@@ -13,7 +13,7 @@ La arquitectura está formada por tres servicios orquestados con Docker Compose:
 
 ## Pasos para el Despliegue
 
-1. Clonar el repositorio:
+1. Clonar el repositorio y acceder a la carpeta:
    ```bash
-   git clone [https://github.com/adrianlopez25-cmyk/proyecto-reservas.git](https://github.com/adrianlopez25-cmyk/proyecto-reservas.git)
+   git clone https://github.com/adrianlopez25-cmyk/proyecto-reservas.git
    cd proyecto-reservas
