@@ -1,0 +1,61 @@
+services:
+  web:
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile
+    container_name: reservas_web
+    restart: unless-stopped
+    ports:
+      - "80:80" # ÚNICO PUERTO EXPUESTO AL HOST
+    networks:
+      - reservas-network
+    depends_on:
+      - api
+
+  api:
+    build:
+      context: ./api
+      dockerfile: Dockerfile
+    container_name: reservas_api
+    restart: unless-stopped
+    # No se exponen puertos al host por seguridad
+    environment:
+      - PORT=${PORT}
+      - DB_HOST=${DB_HOST}
+      - DB_NAME=${DB_NAME}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+    networks:
+      - reservas-network
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db:
+    image: mysql:8.0
+    container_name: reservas_db
+    restart: unless-stopped
+    # No se exponen puertos al host
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${DB_NAME}
+      MYSQL_USER: ${DB_USER}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - reservas-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${DB_ROOT_PASSWORD}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+networks:
+  reservas-network:
+    driver: bridge
+
+volumes:
+  mysql_data:
+    driver: local

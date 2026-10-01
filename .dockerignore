@@ -1,0 +1,4 @@
+echo ".git" > .dockerignore
+echo ".env" >> .dockerignore
+echo "node_modules" >> .dockerignore
+echo "README.md" >> .dockerignore
